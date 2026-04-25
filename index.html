@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Proxmox Bootable USB Help</title>
+    <style>
+        :root {
+            --bg-color: #0d1117;
+            --header-bg: rgba(13, 17, 23, 0.9);
+            --text-color: #c9d1d9;
+            --text-muted: #8b949e;
+            --accent-color: #58a6ff;
+            --button-bg: #21262d;
+            --button-hover: #30363d;
+            --border-color: #30363d;
+            --card-bg: #161b22;
+            --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: var(--font-family);
+            line-height: 1.6;
+            font-size: 1.05rem; /* Reduced 5% from 1.1rem */
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            text-rendering: optimizeLegibility;
+        }
+
+        header {
+            position: sticky;
+            top: 0;
+            background-color: var(--header-bg);
+            backdrop-filter: blur(12px);
+            padding: 1rem;
+            display: flex;
+            justify-content: center;
+            border-bottom: 1px solid var(--border-color);
+            z-index: 1000;
+        }
+
+        .lang-container {
+            display: flex;
+            gap: 1px;
+            background-color: var(--border-color);
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+        }
+
+        .lang-btn {
+            background-color: var(--button-bg);
+            color: var(--text-color);
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .lang-btn:hover {
+            background-color: var(--button-hover);
+        }
+
+        .lang-btn.active {
+            background-color: var(--accent-color);
+            color: #ffffff;
+        }
+
+        main {
+            max-width: 760px; /* Reduced 5% from 800px */
+            margin: 0 auto;
+            padding: 3rem 1.5rem;
+        }
+
+        h1 {
+            font-size: 2.375rem; /* Reduced 5% from 2.5rem */
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            margin-bottom: 3rem;
+            text-align: center;
+            color: #ffffff;
+        }
+
+        .step-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .step-number {
+            color: var(--accent-color);
+            font-weight: 700;
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            margin-bottom: 0.5rem;
+            display: block;
+            letter-spacing: 0.03em;
+        }
+
+        .step-title {
+            font-size: 1.7rem; /* Reduced 5% from 1.8rem */
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            color: #ffffff;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        li {
+            margin-bottom: 1.8rem;
+            font-weight: 500;
+        }
+
+        .li-content {
+            display: flex;
+            flex-direction: column;
+            gap: 1.2rem;
+        }
+
+        .li-text {
+            position: relative;
+            padding-left: 2rem;
+            font-size: 1.09rem; /* Reduced 5% from 1.15rem */
+            overflow-wrap: break-word;
+            word-wrap: break-word;
+            hyphens: auto;
+            line-height: 1.6;
+        }
+
+        .li-text::before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            top: -2px;
+            color: var(--accent-color);
+            font-weight: 900;
+            font-size: 1.5rem;
+        }
+
+        .screenshot {
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            max-width: 100%;
+            height: auto;
+            margin-left: 1.5rem;
+            background: #000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+
+        a {
+            color: var(--accent-color);
+            text-decoration: none;
+            font-weight: 700;
+            overflow-wrap: break-word;
+            word-wrap: break-word;
+            display: inline-block;
+            margin-top: 0.4rem;
+            padding: 4px 10px;
+            background: rgba(88, 166, 255, 0.1);
+            border-radius: 6px;
+            border-bottom: 2px solid var(--accent-color);
+            transition: all 0.2s;
+            font-size: 1rem; /* Reduced 5% from 1.05rem */
+            max-width: 100%;
+        }
+
+        a:hover {
+            background: rgba(88, 166, 255, 0.2);
+            transform: translateY(-1px);
+            text-decoration: none;
+        }
+
+        .video-wrapper {
+            position: relative;
+            margin-top: 2rem;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            background: #000;
+            line-height: 0;
+        }
+
+        video {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .video-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: opacity 0.3s;
+            z-index: 2;
+        }
+
+        .video-overlay.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .play-btn {
+            background: var(--accent-color);
+            color: white;
+            border: none;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            transition: transform 0.2s;
+            padding-left: 5px; /* Visual compensation for triangle shape */
+        }
+
+        .video-overlay:hover .play-btn {
+            transform: scale(1.1);
+        }
+
+        .overlay-text {
+            font-weight: 600;
+            font-size: 1.1rem;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.5);
+            background-color: #f1c40f; /* Yellow */
+            color: #000; /* Black text for contrast */
+            padding: 2rem 3rem;
+            border-radius: 20px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7);
+            z-index: 2000;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            opacity: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            pointer-events: none;
+            text-align: center;
+            width: 400px;
+            max-width: 90%;
+            font-weight: bold;
+            font-size: 1.2rem;
+            border: 3px solid #000;
+        }
+
+        .popup.visible {
+            transform: translate(-50%, -50%) scale(1);
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .popup button {
+            background: #000;
+            border: none;
+            color: #f1c40f;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1rem;
+            padding: 10px 25px;
+            border-radius: 10px;
+            transition: transform 0.2s;
+        }
+
+        .popup button:hover {
+            transform: scale(1.05);
+            background: #222;
+        }
+
+        .youtube-wrapper {
+            position: relative;
+            padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+            height: 0;
+            overflow: hidden;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            margin-top: 2rem;
+        }
+
+        .youtube-wrapper iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: 0;
+        }
+
+        footer {
+            text-align: center;
+            padding: 4rem 0;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="lang-container">
+            <button class="lang-btn" onclick="setLanguage('darija')" id="btn-darija">Darija</button>
+            <button class="lang-btn" onclick="setLanguage('en')" id="btn-en">English</button>
+            <button class="lang-btn" onclick="setLanguage('fr')" id="btn-fr">Français</button>
+        </div>
+    </header>
+
+    <main>
+        <h1 id="main-title">Proxmox Bootable USB Help</h1>
+        
+        <div id="steps-container">
+            <!-- Content populated by JS -->
+        </div>
+    </main>
+
+    <div id="revert-popup" class="popup">
+        <span id="popup-message">If you want to reverse your USB to its normal state, you can see Step 4</span>
+        <button id="popup-close-btn" onclick="this.parentElement.classList.remove('visible')">Got it!</button>
+    </div>
+
+    <footer>
+        <p>&copy; 2024 Proxmox Flash Guide</p>
+    </footer>
+
+    <script>
+        const translations = {
+            'en': {
+                title: 'Proxmox Bootable USB Help (Ventoy)',
+                showVideoButton: 'Watch Clip',
+                stepLabel: 'Step',
+                popupText: 'If you want to reverse your USB to its normal state, you can see Step 4',
+                popupBtn: 'Got it!',
+                steps: [
+                    {
+                        title: 'Prepare Ventoy and Proxmox ISO',
+                        items: [
+                            {
+                                text: 'Download Proxmox ISO: <a href="https://www.proxmox.com/en/downloads/proxmox-virtual-environment/iso" target="_blank">https://www.proxmox.com/en/downloads/proxmox-virtual-environment/iso</a>',
+                                img: 'Proxmox_iso.png'
+                            },
+                            {
+                                text: 'Download Ventoy .zip: <a href="https://sourceforge.net/projects/ventoy/files/v1.1.12/" target="_blank">https://sourceforge.net/projects/ventoy/files/v1.1.12/</a>',
+                                img: 'Ventoy_download_page.png'
+                            },
+                            {
+                                text: 'Extract the zip, and open <strong>Ventoy2Disk</strong>',
+                                img: 'Ventoy2disk.png'
+                            }
+                        ]
+                    },
+                    {
+                        title: 'Making Proxmox bootable',
+                        items: [
+                            { text: 'Open <strong>Ventoy2Disk</strong> and choose your USB', img: 'Ventoy_GUI_chossing_device.png' },
+                            { text: 'Go to "Option", change Partition Table to <strong>GPT</strong>, and ensure <strong>Secure Boot</strong> is enabled' },
+                            { text: 'Click <strong>Install</strong>. If the USB doesn\'t show after, replug it.' },
+                            { text: 'In File Explorer, open the <strong>Ventoy</strong> partition (not VTOYEFI) and move your ISO to it.' }
+                        ],
+                        media: [
+                            { src: 'ventoy_gui_installing_on_usb.webmg', type: 'video/webm' },
+                            { src: 'moving_iso_to_Ventoy.webm', type: 'video/webm' }
+                        ]
+                    },
+                    {
+                        title: 'Booting from the USB',
+                        items: [
+                            { text: 'Turn off your PC and enter the <strong>Boot Menu</strong> (Dell: F2, HP: F10, Lenovo: F12/Enter...)' },
+                            { text: 'Choose your USB from the list' },
+                            { text: 'Select <strong>Proxmox</strong> from the Ventoy menu and choose <strong>Normal Boot Mode</strong>' },
+                            { text: 'Done! Allah ysakher.' }
+                        ],
+                        media: { src: 'how_to_boot_from_usb_wiht_ventoy.mp4', type: 'video/mp4' }
+                    },
+                    {
+                        title: 'Revert USB to normal state',
+                        items: [
+                            { text: 'Open <strong>Ventoy2Disk</strong>' },
+                            { text: 'Enter <strong>Option</strong>' },
+                            { text: 'Click <strong>Clear Ventoy</strong> to format it back to normal' }
+                        ],
+                        isStepPopup: true,
+                        media: { src: 'removing_ventoy_from_usb.webm', type: 'video/webm' }
+                    }
+                ]
+            },
+            'darija': {
+                title: 'Kifash tsayb USB bootable Proxmox (Ventoy)',
+                showVideoButton: 'Shof l-Clip',
+                stepLabel: 'Khotwa',
+                popupText: 'Ila bghiti trjje3 USB dyalk l7altha l3adiya, shof lKhotwa 4',
+                popupBtn: 'Fhemt!',
+                steps: [
+                    {
+                        title: 'Telecharji Ventoy o Proxmox ISO',
+                        items: [
+                            {
+                                text: 'Telecharji Proxmox ISO: <a href="https://www.proxmox.com/en/downloads/proxmox-virtual-environment/iso" target="_blank">https://www.proxmox.com/en/downloads/proxmox-virtual-environment/iso</a>',
+                                img: 'Proxmox_iso.png'
+                            },
+                            {
+                                text: 'Telecharji Ventoy .zip: <a href="https://sourceforge.net/projects/ventoy/files/v1.1.12/" target="_blank">https://sourceforge.net/projects/ventoy/files/v1.1.12/</a>',
+                                img: 'Ventoy_download_page.png'
+                            },
+                            {
+                                text: 'Extract .zip o fte7 dossier <strong>Ventoy2Disk</strong>',
+                                img: 'Ventoy2disk.png'
+                            }
+                        ]
+                    },
+                    {
+                        title: 'Tari9a dyal USB bootable',
+                        items: [
+                            { text: '7ell <strong>Ventoy2Disk</strong> o khtar USB dyalk', img: 'Ventoy_GUI_chossing_device.png' },
+                            { text: 'Sir l-<strong>Option</strong>, bddel Partition Table l-<strong>GPT</strong>, o takked bli <strong>Secure Boot</strong> active' },
+                            { text: 'Klikki <strong>Install</strong>. Ila mab9atch tal3a USB, 7yedha mn pc o rekkebha' },
+                            { text: 'Dkhol Ce PC 7ell Dossier li smito <strong>Ventoy</strong> (mashi VTOYEFI !) o copi ISO dyalk tma' }
+                        ],
+                        media: [
+                            { src: 'ventoy_gui_installing_on_usb.webmg', type: 'video/webm' },
+                            { src: 'moving_iso_to_Ventoy.webm', type: 'video/webm' }
+                        ]
+                    },
+                    {
+                        title: 'Kifach tBooti mn USB',
+                        items: [
+                            { text: 'Tfi PC o dkhel l-<strong>Boot Menu</strong> (Dell: F2, HP: F10, Lenovo: F12...)' },
+                            { text: 'Khtar USB dyalk mn l-liste' },
+                            { text: 'Khtar <strong>Proxmox</strong> f-Ventoy o khtar <strong>Normal Boot Mode</strong>' },
+                            { text: 'Safe Nadi! Allah ysakher.' }
+                        ],
+                        media: { src: 'how_to_boot_from_usb_wiht_ventoy.mp4', type: 'video/mp4' }
+                    },
+                    {
+                        title: 'Labghiti tformati USB l-7altha l-3adiya',
+                        items: [
+                            { text: '7ell <strong>Ventoy2Disk</strong>' },
+                            { text: 'Dkhel l-<strong>Option</strong>' },
+                            { text: 'Klikki <strong>Clear Ventoy</strong> bach t-formatiha' }
+                        ],
+                        isStepPopup: true,
+                        media: { src: 'removing_ventoy_from_usb.webm', type: 'video/webm' }
+                    }
+                ]
+            },
+            'fr': {
+                title: 'Aide USB Bootable Proxmox (Ventoy)',
+                showVideoButton: 'Voir le clip',
+                stepLabel: 'Étape',
+                popupText: 'Si vous voulez remettre votre clé USB à son état normal, consultez l\'étape 4',
+                popupBtn: 'Compris !',
+                steps: [
+                    {
+                        title: 'Préparer Ventoy et l\'ISO Proxmox',
+                        items: [
+                            {
+                                text: 'Télécharger l\'ISO Proxmox : <a href="https://www.proxmox.com/en/downloads/proxmox-virtual-environment/iso" target="_blank">https://www.proxmox.com/en/downloads/proxmox-virtual-environment/iso</a>',
+                                img: 'Proxmox_iso.png'
+                            },
+                            {
+                                text: 'Télécharger Ventoy .zip : <a href="https://sourceforge.net/projects/ventoy/files/v1.1.12/" target="_blank">https://sourceforge.net/projects/ventoy/files/v1.1.12/</a>',
+                                img: 'Ventoy_download_page.png'
+                            },
+                            {
+                                text: 'Extrayez le zip et ouvrez <strong>Ventoy2Disk</strong>',
+                                img: 'Ventoy2disk.png'
+                            }
+                        ]
+                    },
+                    {
+                        title: 'Rendre la clé USB bootable',
+                        items: [
+                            { text: 'Ouvrez <strong>Ventoy2Disk</strong> et choisissez votre clé USB', img: 'Ventoy_GUI_chossing_device.png' },
+                            { text: 'Allez dans "Option", changez la table de partition en <strong>GPT</strong>, et activez le <strong>Secure Boot</strong>' },
+                            { text: 'Cliquez sur <strong>Installer</strong>. Si la clé disparaît, débranchez/rebranchez-la.' },
+                            { text: 'Ouvrez le lecteur <strong>Ventoy</strong> (pas VTOYEFI) et déplacez l\'ISO dedans.' }
+                        ],
+                        media: [
+                            { src: 'ventoy_gui_installing_on_usb.webmg', type: 'video/webm' },
+                            { src: 'moving_iso_to_Ventoy.webm', type: 'video/webm' }
+                        ]
+                    },
+                    {
+                        title: 'Démarrer depuis la clé USB',
+                        items: [
+                            { text: 'Éteignez votre PC et entrez dans le <strong>Menu de démarrage</strong> (Dell: F2, HP: F10, Lenovo: F12...)' },
+                            { text: 'Choisissez votre clé USB dans la liste' },
+                            { text: 'Sélectionnez <strong>Proxmox</strong> dans Ventoy et choisissez <strong>Normal Boot Mode</strong>' },
+                            { text: 'Terminé ! Allah ysakher.' }
+                        ],
+                        media: { src: 'how_to_boot_from_usb_wiht_ventoy.mp4', type: 'video/mp4' }
+                    },
+                    {
+                        title: 'Remettre la clé USB à l\'état normal',
+                        items: [
+                            { text: 'Ouvrez <strong>Ventoy2Disk</strong>' },
+                            { text: 'Allez dans <strong>Option</strong>' },
+                            { text: 'Cliquez sur <strong>Clear Ventoy</strong> pour formater la clé' }
+                        ],
+                        isStepPopup: true,
+                        media: { src: 'removing_ventoy_from_usb.webm', type: 'video/webm' }
+                    }
+                ]
+            }
+        };
+
+        let observer;
+
+        function setupObserver() {
+            if (observer) observer.disconnect();
+            
+            const popupStepCard = document.querySelector('.step-card-popup');
+            if (!popupStepCard) return;
+
+            observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        document.getElementById('revert-popup').classList.add('visible');
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            observer.observe(popupStepCard);
+        }
+
+        function handlePlay(overlay) {
+            const video = overlay.previousElementSibling;
+            overlay.classList.add('hidden');
+            video.play();
+            video.setAttribute('controls', 'true');
+        }
+
+        function setLanguage(lang) {
+            const data = translations[lang];
+            
+            // Update Title
+            document.getElementById('main-title').textContent = data.title;
+            document.title = data.title;
+
+            // Update Popup Text
+            document.getElementById('popup-message').textContent = data.popupText;
+            document.getElementById('popup-close-btn').textContent = data.popupBtn;
+
+            // Update Steps
+            const container = document.getElementById('steps-container');
+            container.innerHTML = '';
+
+            data.steps.forEach((step, index) => {
+                const card = document.createElement('div');
+                card.className = 'step-card' + (step.isStepPopup ? ' step-card-popup' : '');
+                
+                let itemsHtml = step.items.map(item => `
+                    <li>
+                        <div class="li-content">
+                            <div class="li-text">${item.text}</div>
+                            ${item.img ? `<img src="${item.img}" class="screenshot" alt="Screenshot for ${item.text.split(':')[0]}">` : ''}
+                        </div>
+                    </li>
+                `).join('');
+                
+                let mediaHtml = '';
+                if (step.media) {
+                    const mediaArray = Array.isArray(step.media) ? step.media : [step.media];
+                    mediaHtml = mediaArray.map(m => `
+                        <div class="video-wrapper">
+                            <video playsinline preload="metadata">
+                                <source src="${m.src}" type="${m.type}">
+                                Your browser does not support the video tag.
+                            </video>
+                            <div class="video-overlay" onclick="handlePlay(this)">
+                                <div class="play-btn">▶</div>
+                                <div class="overlay-text">${data.showVideoButton}</div>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+
+                card.innerHTML = `
+                    <span class="step-number">${data.stepLabel} ${index + 1}</span>
+                    <h2 class="step-title">${step.title}</h2>
+                    <ul>${itemsHtml}</ul>
+                    ${mediaHtml}
+                `;
+                container.appendChild(card);
+            });
+
+            // Update Active Button UI
+            document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(`btn-${lang}`).classList.add('active');
+
+            // Save preference
+            localStorage.setItem('preferred-lang', lang);
+
+            // Setup observer for Popup Step
+            setupObserver();
+        }
+
+        // Initialize
+        const savedLang = localStorage.getItem('preferred-lang') || 'en';
+        setLanguage(savedLang);
+    </script>
+</body>
+</html>
