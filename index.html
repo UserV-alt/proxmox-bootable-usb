@@ -218,6 +218,75 @@
             text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
         }
 
+        .popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.5);
+            background-color: #f1c40f; /* Yellow */
+            color: #000; /* Black text for contrast */
+            padding: 2rem 3rem;
+            border-radius: 20px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7);
+            z-index: 2000;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            opacity: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            pointer-events: none;
+            text-align: center;
+            width: 400px;
+            max-width: 90%;
+            font-weight: bold;
+            font-size: 1.2rem;
+            border: 3px solid #000;
+        }
+
+        .popup.visible {
+            transform: translate(-50%, -50%) scale(1);
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .popup button {
+            background: #000;
+            border: none;
+            color: #f1c40f;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1rem;
+            padding: 10px 25px;
+            border-radius: 10px;
+            transition: transform 0.2s;
+        }
+
+        .popup button:hover {
+            transform: scale(1.05);
+            background: #222;
+        }
+
+        .youtube-wrapper {
+            position: relative;
+            padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+            height: 0;
+            overflow: hidden;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            margin-top: 2rem;
+        }
+
+        .youtube-wrapper iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: 0;
+        }
+
         footer {
             text-align: center;
             padding: 4rem 0;
@@ -243,6 +312,11 @@
         </div>
     </main>
 
+    <div id="revert-popup" class="popup">
+        <span id="popup-message">If you want to reverse your USB to its normal state, you can see Step 3</span>
+        <button id="popup-close-btn" onclick="this.parentElement.classList.remove('visible')">Got it!</button>
+    </div>
+
     <footer>
         <p>&copy; 2024 Proxmox Flash Guide</p>
     </footer>
@@ -253,6 +327,8 @@
                 title: 'Proxmox Bootable USB Help',
                 showVideoButton: 'Watch Tutorial',
                 stepLabel: 'Step',
+                popupText: 'If you want to reverse your USB to its normal state, you can see Step 3',
+                popupBtn: 'Got it!',
                 steps: [
                     {
                         title: 'Prepare BalenaEtcher and Proxmox ISO',
@@ -275,6 +351,19 @@
                             { text: 'Click "Flash from file", and choose the ISO' }
                         ],
                         hasMedia: true
+                    },
+                    {
+                        title: 'Revert USB to Normal Format (Windows)',
+                        items: [
+                            { text: 'Open "Disk Management" (Right-click the Start button and select it)' },
+                            { text: 'Locate your USB drive in the list (Be careful not to select your hard drive!)' },
+                            { text: 'Right-click each partition on the USB and select "Delete Volume"' },
+                            { text: 'Once it shows as "Unallocated", right-click it and select "New Simple Volume"' },
+                            { text: 'Follow the wizard to format it (FAT32 or NTFS)' }
+                        ],
+                        isStep3: true,
+                        youtubeId: 'mUzsoc0VXlY',
+                        startTime: 74
                     }
                 ]
             },
@@ -282,6 +371,8 @@
                 title: 'Kifash tsayb USB Bootable Proxmox',
                 showVideoButton: 'Shof Video dyal char7',
                 stepLabel: 'Khotwa',
+                popupText: 'Ila bghiti trjje3 USB dyalk l-7altha l-3adiya, shof l-Khotwa 3',
+                popupBtn: 'Fhemt!',
                 steps: [
                     {
                         title: 'BalenaEtcher o Proxmox ISO',
@@ -304,6 +395,19 @@
                             { text: 'Klikki "Flash from file", o khtar ISO' }
                         ],
                         hasMedia: true
+                    },
+                    {
+                        title: 'Rejja3 USB l-7altha l-3adiya (Windows)',
+                        items: [
+                            { text: 'Hell "Disk Management" (Dir click ymin f-bouton Start o khtarha)' },
+                            { text: '9elleb 3la USB dyalk f-la liste (3ndak tghlet m3a l-disque dur!)' },
+                            { text: 'Dir click ymin 3la kol blasa (partition) f-USB o khtar "Delete Volume"' },
+                            { text: 'Mli twelli "Unallocated", dir click ymin o khtar "New Simple Volume"' },
+                            { text: 'Tebbe3 l-marahil bach t-formatiha (FAT32 aw NTFS)' }
+                        ],
+                        isStep3: true,
+                        youtubeId: 'mUzsoc0VXlY',
+                        startTime: 74
                     }
                 ]
             },
@@ -311,6 +415,8 @@
                 title: 'Aide pour Clé USB Bootable Proxmox',
                 showVideoButton: 'Voir le tutoriel',
                 stepLabel: 'Étape',
+                popupText: 'Si vous voulez remettre votre clé USB à son état normal, consultez l\'étape 3',
+                popupBtn: 'Compris !',
                 steps: [
                     {
                         title: 'Préparer BalenaEtcher et l\'ISO Proxmox',
@@ -333,10 +439,42 @@
                             { text: 'Cliquez sur "Flash from file" et choisissez l\'ISO' }
                         ],
                         hasMedia: true
+                    },
+                    {
+                        title: 'Remettre la clé USB à son état normal (Windows)',
+                        items: [
+                            { text: 'Ouvrez la "Gestion des disques" (Clic droit sur le bouton Démarrer)' },
+                            { text: 'Localisez votre clé USB dans la liste (Attention à ne pas choisir votre disque dur !)' },
+                            { text: 'Faites un clic droit sur chaque partition de la clé USB et sélectionnez "Supprimer le volume"' },
+                            { text: 'Une fois en espace "Non alloué", faites un clic droit et sélectionnez "Nouveau volume simple"' },
+                            { text: 'Suivez l\'assistant pour formater la clé (FAT32 ou NTFS)' }
+                        ],
+                        isStep3: true,
+                        youtubeId: 'mUzsoc0VXlY',
+                        startTime: 74
                     }
                 ]
             }
         };
+
+        let observer;
+
+        function setupObserver() {
+            if (observer) observer.disconnect();
+            
+            const step3Card = document.querySelector('.step-card-3');
+            if (!step3Card) return;
+
+            observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        document.getElementById('revert-popup').classList.add('visible');
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            observer.observe(step3Card);
+        }
 
         function handlePlay(overlay) {
             const video = overlay.previousElementSibling;
@@ -352,13 +490,17 @@
             document.getElementById('main-title').textContent = data.title;
             document.title = data.title;
 
+            // Update Popup Text
+            document.getElementById('popup-message').textContent = data.popupText;
+            document.getElementById('popup-close-btn').textContent = data.popupBtn;
+
             // Update Steps
             const container = document.getElementById('steps-container');
             container.innerHTML = '';
 
             data.steps.forEach((step, index) => {
                 const card = document.createElement('div');
-                card.className = 'step-card';
+                card.className = 'step-card' + (step.isStep3 ? ' step-card-3' : '');
                 
                 let itemsHtml = step.items.map(item => `
                     <li>
@@ -383,6 +525,18 @@
                             </div>
                         </div>
                     `;
+                } else if (step.youtubeId) {
+                    mediaHtml = `
+                        <div class="video-wrapper">
+                            <div class="video-overlay" onclick="window.open('https://youtu.be/${step.youtubeId}?t=${step.startTime}', '_blank')">
+                                <div class="play-btn">▶</div>
+                                <div class="overlay-text">${data.showVideoButton}</div>
+                            </div>
+                            <div class="youtube-placeholder" style="width:100%; aspect-ratio:16/9; background:#1a1a1a; display:flex; align-items:center; justify-content:center; color:var(--text-muted); font-size: 1.2rem; font-weight: 500;">
+                                <span>Video Explanation</span>
+                            </div>
+                        </div>
+                    `;
                 }
 
                 card.innerHTML = `
@@ -400,6 +554,16 @@
 
             // Save preference
             localStorage.setItem('preferred-lang', lang);
+
+            // Setup observer for Step 3
+            setupObserver();
+        }
+
+        function handlePlay(overlay) {
+            const video = overlay.previousElementSibling;
+            overlay.classList.add('hidden');
+            video.play();
+            video.setAttribute('controls', 'true');
         }
 
         // Initialize
